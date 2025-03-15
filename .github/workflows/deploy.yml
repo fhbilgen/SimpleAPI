@@ -1,4 +1,6 @@
+name: Deploy Simple API
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
