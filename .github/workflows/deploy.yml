@@ -43,12 +43,32 @@ jobs:
       with:
         name: webapi-artifacts
         path: ./publish
+        
+    - name: Copy Files to Azure VM
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.AZURE_HOST }}
+        username: ${{ secrets.AZURE_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "./publish/*"
+        target: "/home/${{ secrets.AZURE_VM_USERNAME }}/webapi"
 
-    - name: Deploy to Azure Ubuntu Server
-      env:
-        AZURE_HOST: ${{ secrets.AZURE_HOST }}
-        AZURE_USERNAME: ${{ secrets.AZURE_USERNAME }}
-        AZURE_PASSWORD: ${{ secrets.AZURE_PASSWORD }}
-      run: |
-        scp -v -o StrictHostKeyChecking=no -r ./publish/* $AZURE_USERNAME@$AZURE_HOST:/var/www/myapp
-        ssh -T git@github.com $AZURE_USERNAME@$AZURE_HOST 'sudo systemctl restart myapp'
+    - name: Deploy and Restart Service on Azure VM
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.AZURE_HOST }}
+        username: ${{ secrets.AZURE_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          sudo systemctl stop kestrel-webapi.service
+          sudo cp -r /home/${{ secrets.AZURE_VM_USERNAME }}/webapi/* /var/www/webapi/
+          sudo systemctl start kestrel-webapi.service
+          
+#    - name: Deploy to Azure Ubuntu Server
+#      env:
+#        AZURE_HOST: ${{ secrets.AZURE_HOST }}
+#        AZURE_USERNAME: ${{ secrets.AZURE_USERNAME }}
+#        AZURE_PASSWORD: ${{ secrets.AZURE_PASSWORD }}
+#      run: |
+#        scp -v -o StrictHostKeyChecking=no -r ./publish/* $AZURE_USERNAME@$AZURE_HOST:/var/www/myapp
+#        ssh -T git@github.com $AZURE_USERNAME@$AZURE_HOST 'sudo systemctl restart myapp'
