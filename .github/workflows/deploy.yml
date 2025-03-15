@@ -51,4 +51,4 @@ jobs:
         AZURE_PASSWORD: ${{ secrets.AZURE_PASSWORD }}
       run: |
         scp -r ./publish/* $AZURE_USERNAME@$AZURE_HOST:/var/www/myapp
-        ssh $AZURE_USERNAME@$AZURE_HOST 'sudo systemctl restart myapp'
+        ssh -T git@github.com $AZURE_USERNAME@$AZURE_HOST 'sudo systemctl restart myapp'
