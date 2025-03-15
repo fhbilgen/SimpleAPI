@@ -44,14 +44,14 @@ jobs:
         name: webapi-artifacts
         path: ./publish
         
-    - name: Copy Files to Azure VM
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.AZURE_HOST }}
-        username: ${{ secrets.AZURE_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "./publish/*"
-        target: "/home/${{ secrets.AZURE_USERNAME }}/webapi"
+   # - name: Copy Files to Azure VM
+    #  uses: appleboy/scp-action@v0.1.7
+     # with:
+      #  host: ${{ secrets.AZURE_HOST }}
+       # username: ${{ secrets.AZURE_USERNAME }}
+        #key: ${{ secrets.SSH_PRIVATE_KEY }}
+        #source: "./publish/*"
+        #target: "/home/${{ secrets.AZURE_USERNAME }}/webapi"
 
     - name: Deploy and Restart Service on Azure VM
       uses: appleboy/ssh-action@v1.0.3
